@@ -1,0 +1,38 @@
+"ap.config(essid=SSID, password=PASSWORD, authmode=3)"
+
+import network
+import machine
+import dht
+import time
+
+# Configuración de red
+SSID = "Danny Rivera"
+PASSWORD = "12345678"
+
+ap = network.WLAN(network.AP_IF)
+ap.active(True)
+
+# Establecer autenticación WPA2
+ap.config(essid=SSID, password=PASSWORD, authmode=3)
+
+# Esperar a que esté activa
+while not ap.active():
+    pass
+
+print("Access Point creado con éxito")
+print("Nombre de red:", SSID)
+print("Contraseña:", PASSWORD)
+print("Dirección IP:", ap.ifconfig()[0])
+
+# Sensor DHT11 en pin 23
+dht_sensor = dht.DHT11(machine.Pin(23))
+
+while True:
+    try:
+        dht_sensor.measure()
+        t = dht_sensor.temperature()
+        h = dht_sensor.humidity()
+        print("Temperatura: {}°C | Humedad: {}%".format(t, h))
+        time.sleep(2)
+    except OSError as e:
+        print("Error al leer el sensor:", e)
